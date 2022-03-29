@@ -3,14 +3,19 @@ import './style.sass'
 import Filter from "../../components/Filter";
 import {getUsersList} from "../../server/fetchers/getUsers";
 import InformationUsers from "../InformationUsers";
+import ClipLoader from "react-spinners/ClipLoader";
 
 const ListUsers: React.FC = () => {
     const [usersListArray, setUsersListArray] = useState<any>()
     const [showUsersInformation, setShowUsersInformation] = useState<boolean>(false)
     const [usersListInformation, setUsersListInformation] = useState<any>()
+    const [loading, setLoading] = useState(true);
     useEffect(()=>{
         (async () => {
             let usersList = await getUsersList()
+            if (usersList){
+                setLoading(false)
+            }
             setUsersListArray(usersList)
         })()
     },[])
@@ -35,7 +40,12 @@ const ListUsers: React.FC = () => {
     return (
         <div className='main'>
             <Filter filterFuncCity={filterFuncCity} filterFuncCompany={filterFuncCompany}/>
-            {!showUsersInformation &&
+            {loading &&
+                <div className='loading'>
+                    <ClipLoader />
+                </div>
+            }
+            {(!showUsersInformation && !loading) &&
                 <div className="main_users">
                     <h3>Список пользователей</h3>
                     {usersListArray?.map((value: any, index: number) =>
